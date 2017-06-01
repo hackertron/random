@@ -1,0 +1,36 @@
+#cs ----------------------------------------------------------------------------
+
+ AutoIt Version: 3.3.12.0
+ Author:         jay
+
+ Script Function:
+	Template AutoIt script.
+
+#ce ----------------------------------------------------------------------------
+
+; Script Start - 
+hotkeyset("{f1}","stop")
+hotkeyset("{f2}","pause")
+$color=0x99B3E9
+$pause=false
+
+while 1
+	$head_search=PixelSearch(200,300,500,600,$color,5,1)
+	if $head_search= not @error then
+		mouseclick ("left",$head_search[0],$head_search[1],1,10)
+	EndIf
+	sleep (5)
+WEnd
+
+func stop ()
+	Exit
+EndFunc
+
+func pause()
+	$pause=not $pause
+	if $pause=true Then
+		Do
+			sleep (5)
+		until $pause=False
+	EndIf
+EndFunc

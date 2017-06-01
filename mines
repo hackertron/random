@@ -1,0 +1,95 @@
+#CS
+    AutoIt Version: 3.3.12.0
+    Author:jayssj11
+    Computer Cheats at Minesweeper
+    Works on any size grid (within reason)
+    Computer plays minesweeper extremely fast
+
+    Inspired by "Freekills Minesweeper Cheats"
+#CE
+
+; Exit via Ctrl-Alt-X
+HotKeySet("^!x", "MyExit")
+
+; MouseMove speed where applicable
+dim $speed = 0
+
+dim $title = "Computer Cheats at Minesweeper"
+dim $win = "Minesweeper"
+
+dim $Width, $Height, $wX, $wY, $X, $Y, $X1, $Y1, $X2, $Y2
+dim $i, $j, $color, $color1, $color2, $pos, $Cols, $Rows
+
+If WinExists($win) = 0 then
+    Run(@SystemDir & "\winmine.exe")
+    Sleep(500)
+endIf
+
+WinActivate($win)
+Sleep(50)
+
+; Get Minesweeper info
+$size = WinGetPos($win)
+$wX = $size[0]
+$wY = $size[1]
+$Width = $size[2]
+$Height = $size[3]
+
+; Start coords of mine grid -relative to window
+$X1 = 16
+$Y1 = 97
+
+; End coords of mine grid -relative to window
+$X2 = $Width - 11
+$Y2 = $Height - 11
+
+; size of each box;W=16;H=16
+; Determine Grid size from window size
+$Cols = int(($X2 - $X1 + 1) / 16)
+$Rows = int(($Y2 - $Y1 + 1) / 16)
+
+if MsgBox(4, $title, "Ready?" & @CR & @CR & "Cols: " & $Cols & @CR & "Rows: " & $Rows & @CR ) <> 6 then exit
+
+AutoItSetOption("MouseCoordMode", 0)
+AutoItSetOption("PixelCoordMode", 1)
+
+WinActivate($win)
+
+; Send happy fun code
+Send("xyzzy{RSHIfT}{ENTER}")
+
+For $i = 1 to $Rows
+   ;[EDIT] faster yet again without this line... WinActivate($win)
+    For $j = 1 to $Cols
+       ; Center of each box
+        $X = int($X1 + (($X2 - $X1) / $Cols * $j) - 8)
+        $Y = int($Y1 + (($Y2 - $Y1) / $Rows * $i) - 8)
+
+        AutoItSetOption("PixelCoordMode", 0)
+        $color1 = PixelGetColor($X - 7, $Y)
+        AutoItSetOption("PixelCoordMode", 1)
+
+       ; Unclicked/Unknown color
+        If $color1 = 16777215 then
+           ; Waive the mouse around a bit to get the pixel
+           ; Center
+            MouseMove($X, $Y, 0)
+           ; Bottom right
+           ;[EDIT] works without this line...   MouseMove($X1 + (($X2 - $X1) / $Cols * $j) - 4, $Y1 + (($Y2 - $Y1) / $Rows * $i) - 4, $speed)
+
+            $color = PixelGetColor(0, 0)
+
+            If NOT $color = 0 Then
+                MouseClick("left")
+            Else
+                MouseClick("right")
+            EndIf
+        EndIf
+    Next;j
+Next;i
+
+Exit
+; Exit via Ctrl-Alt-X
+Func MyExit()
+    Exit
+EndFunc
