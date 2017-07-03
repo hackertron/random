@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+  <head>
+    <title>Javascript Othello Game</title>
+    <link rel="stylesheet" href="eder.css" type="text/css" />
+    <link rel="stylesheet" href="print.css" type="text/css" media="print" />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <meta name="viewport" content="width=820, initial-scale=1">
+    
+  </head>
+  <body onload="new_game()">
+
+
+  <div class="content">
+    <img src="clear.gif" alt=""/>
+    <h1 class="noprint">Javascript Othello Game</h1>
+
+      <script>
+    var square = new Array();
+    for(i = 1; i <= 8; i++) square[i] = new Array();
+    //var turn = 'white';
+	  var turn = 'black';
+    var white = 0;
+    var black = 0;
+
+    var orderA = new Array();
+    var orderB = new Array();
+    orderA[0] = 1; orderB[0] = 1;
+    orderA[1] = 1; orderB[1] = 8;
+    orderA[2] = 8; orderB[2] = 1;
+    orderA[3] = 8; orderB[3] = 8;
+
+    orderA[4] = 1; orderB[4] = 3;
+    orderA[5] = 1; orderB[5] = 6;
+    orderA[6] = 3; orderB[6] = 1;
+    orderA[7] = 3; orderB[7] = 8;
+    orderA[8] = 6; orderB[8] = 1;
+    orderA[9] = 6; orderB[9] = 8;
+    orderA[10] = 8; orderB[10] = 3;
+    orderA[11] = 8; orderB[11] = 6;
+
+    orderA[12] = 1; orderB[12] = 4;
+    orderA[13] = 1; orderB[13] = 5;
+    orderA[14] = 4; orderB[14] = 1;
+    orderA[15] = 4; orderB[15] = 8;
+    orderA[16] = 5; orderB[16] = 1;
+    orderA[17] = 5; orderB[17] = 8;
+    orderA[18] = 8; orderB[18] = 4;
+    orderA[19] = 8; orderB[19] = 5;
+
+    orderA[20] = 3; orderB[20] = 3;
+    orderA[21] = 3; orderB[21] = 6;
+    orderA[22] = 6; orderB[22] = 3;
+    orderA[23] = 6; orderB[23] = 6;
+
+    orderA[24] = 3; orderB[24] = 4;
+    orderA[25] = 3; orderB[25] = 5;
+    orderA[26] = 4; orderB[26] = 3;
+    orderA[27] = 4; orderB[27] = 6;
+    orderA[28] = 5; orderB[28] = 3;
+    orderA[29] = 5; orderB[29] = 6;
+    orderA[30] = 6; orderB[30] = 4;
+    orderA[31] = 6; orderB[31] = 5;
+
+    orderA[32] = 2; orderB[32] = 3;
+    orderA[33] = 2; orderB[33] = 6;
+    orderA[34] = 3; orderB[34] = 2;
+    orderA[35] = 3; orderB[35] = 7;
+    orderA[36] = 6; orderB[36] = 2;
+    orderA[37] = 6; orderB[37] = 7;
+    orderA[38] = 7; orderB[38] = 3;
+    orderA[39] = 7; orderB[39] = 6;
+
+    orderA[40] = 2; orderB[40] = 4;
+    orderA[41] = 2; orderB[41] = 5;
+    orderA[42] = 4; orderB[42] = 2;
+    orderA[43] = 4; orderB[43] = 7;
+    orderA[44] = 5; orderB[44] = 2;
+    orderA[45] = 5; orderB[45] = 7;
+    orderA[46] = 7; orderB[46] = 4;
+    orderA[47] = 7; orderB[47] = 5;
+
+    orderA[48] = 1; orderB[48] = 2;
+    orderA[49] = 1; orderB[49] = 7;
+    orderA[50] = 2; orderB[50] = 1;
+    orderA[51] = 2; orderB[51] = 8;
+    orderA[52] = 7; orderB[52] = 1;
+    orderA[53] = 7; orderB[53] = 8;
+    orderA[54] = 8; orderB[54] = 2;
+    orderA[55] = 8; orderB[55] = 7;
+
+    orderA[56] = 2; orderB[56] = 2;
+    orderA[57] = 2; orderB[57] = 7;
+    orderA[58] = 7; orderB[58] = 2;
+    orderA[59] = 7; orderB[59] = 7;
+
+    function refresh()
+    {
+      white = 0;
+      black = 0;
+      message.innerHTML = turn+"'s turn";
+      for(a = 1; a <= 8; a++)
+        for(b = 1; b <= 8; b++)
+        {
+          extra = '';
+          if(square[a][b] == 'clear' && !(
+            (document.options.computer_white.checked && turn == 'white') ||
+            (document.options.computer_black.checked && turn == 'black')))
+          {
+            count = flip(a, b, turn, false);
+            if(count)
+              extra = 'onclick="move('+a+','+b+')" alt="'+flip(a, b, turn, false)+'"';
+          }
+          else
+          {
+            if(square[a][b] == 'white') white++;
+            else black++;
+          }
+          document.all.item("cell"+(a)+(b)).innerHTML = '<img src="'+square[a][b]+'.gif" width="50" height="50"'+extra+'>';
+        }
+      white_score.innerHTML = white;
+      black_score.innerHTML = black;
+    }
+
+    function new_game()
+    {
+      for(i = 1; i <= 8; i++)
+        for(j = 1; j <= 8; j++)
+        {
+          square[i][j] = 'clear';
+        }
+      square[4][4] = 'white';
+      square[4][5] = 'black';
+      square[5][4] = 'black';
+      square[5][5] = 'white';
+
+      refresh();
+    }
+
+    function flip(i, j, color, go)
+    {
+      change = 0;
+      if(square[i][j] != 'clear') return 0;
+
+      if(i > 2 && j > 2)
+      {
+        if(square[i - 1][j - 1] != 'clear' && square[i - 1][j - 1] != color)
+        {
+          k = i - 2;
+          l = j - 2;
+          while(k > 1 && l > 1 && square[k][l] != 'clear' && square[k][l] != color)
+          {
+            k--;
+            l--;
+          }
+          if(square[k][l] == color) while(k < i && l < j)
+          {
+            k++;
+            l++;
+            if(go)
+              square[k][l] = color;
+            change++;
+          }
+        }
+      }
+
+      if(i > 2)
+      {
+        if(square[i - 1][j] != 'clear' && square[i - 1][j] != color)
+        {
+          k = i - 2;
+          while(k > 1 && square[k][j] != 'clear' && square[k][j] != color)
+          {
+            k--;
+          }
+          if(square[k][j] == color) while(k < i)
+          {
+            k++;
+            if(go)
+              square[k][j] = color;
+            change++;
+          }
+        }
+      }
+
+      if(i < 7 && j > 2)
+      {
+        if(square[i + 1][j - 1] != 'clear' && square[i + 1][j - 1] != color)
+        {
+          k = i + 2;
+          l = j - 2;
+          while(k < 8 && l > 1 && square[k][l] != 'clear' && square[k][l] != color)
+          {
+            k++;
+            l--;
+          }
+          if(square[k][l] == color) while(k > i && l < j)
+          {
+            k--;
+            l++;
+            if(go)
+              square[k][l] = color;
+            change++;
+          }
+        }
+      }
+
+      if(j < 7)
+      {
+        if(square[i][j + 1] != 'clear' && square[i][j + 1] != color)
+        {
+          l = j + 2;
+          while(l < 8 && square[i][l] != 'clear' && square[i][l] != color)
+          {
+            l++;
+          }
+          if(square[i][l] == color) while(l > j)
+          {
+            l--;
+            if(go) 
+              square[i][l] = color;
+            change++;
+          }
+        }
+      }
+
+      if(i > 2 && j < 7)
+      {
+        if(square[i - 1][j + 1] != 'clear' && square[i - 1][j + 1] != color)
+        {
+          k = i - 2;
+          l = j + 2;
+          while(k > 1 && l < 8 && square[k][l] != 'clear' && square[k][l] != color)
+          {
+            k--;
+            l++;
+          }
+          if(square[k][l] == color) while(k < i && l > j)
+          {
+            k++;
+            l--;
+            if(go) 
+              square[k][l] = color;
+            change++;
+          }
+        }
+      }
+
+      if(i < 7)
+      {
+        if(square[i + 1][j] != 'clear' && square[i + 1][j] != color)
+        {
+          k = i + 2;
+          while(k < 8 && square[k][j] != 'clear' && square[k][j] != color)
+          {
+            k++;
+          }
+          if(square[k][j] == color) while(k > i)
+          {
+            k--;
+            if(go) 
+              square[k][j] = color;
+            change++;
+          }
+        }
+      }
+
+      if(i < 7 && j < 7)
+      {
+        if(square[i + 1][j + 1] != 'clear' && square[i + 1][j + 1] != color)
+        {
+          k = i + 2;
+          l = j + 2;
+          while(k < 8 && l < 8 && square[k][l] != 'clear' && square[k][l] != color)
+          {
+            k++;
+            l++;
+          }
+          if(square[k][l] == color) while(k > i && l > j)
+          {
+            k--;
+            l--;
+            if(go) 
+              square[k][l] = color;
+            change++;
+          }
+        }
+      }
+
+      if(j > 2)
+      {
+        if(square[i][j - 1] != 'clear' && square[i][j - 1] != color)
+        {
+          l = j - 2;
+          while(l > 1 && square[i][l] != 'clear' && square[i][l] != color)
+          {
+            l--;
+          }
+          if(square[i][l] == color) while(l < j)
+          {
+            l++;
+            if(go) 
+              square[i][l] = color;
+            change++;
+          }
+        }
+      }
+      if(change && go) square[i][j] = color;
+
+      return change;
+    }
+
+    function computer()
+    {
+      for(z = 0; z < 60; z++)
+      {
+        if(flip(orderA[z], orderB[z], turn, false)) break;
+      }
+      if(z < 60) move(orderA[z], orderB[z]);
+    }
+
+    function move(m, n)
+    {
+      moves = 0;
+      if(flip(m, n, turn, true))
+      {
+        if(turn == 'white') turn = 'black';
+        else turn = 'white';
+        refresh();
+        for(o = 1; o < 9; o++)
+        {
+          for(p = 1; p < 9; p++)
+          {
+            if(flip(o, p, turn, false) > 0) moves++;
+          }
+        }
+        if(moves == 0)
+        {
+          if(turn == 'white') turn = 'black';
+          else turn = 'white';
+          refresh();
+          for(o = 1; o < 9; o++)
+            for(p = 1; p < 9; p++)
+              if(flip(o, p, turn, false)) moves++;
+          if(moves == 0)
+          {
+            message.innerHTML = "Game Over!";
+          }
+          else
+          {
+            if(turn == 'white') alert('Black passes!');
+            else message.innerHTML = alert('White passes!');
+          }
+        }
+      }
+      if(turn == 'black' && document.options.computer_black.checked) setTimeout("computer();", 500);
+      else if(turn == 'white' && document.options.computer_white.checked) setTimeout("computer();", 500);
+    }
+  </script>
+<center>
+<table border=1 bgcolor="#339900" width=469><tr><td align="center">
+  <table width="100%" cellpadding=0 cellspacing=0 border=0><tr>
+    <td background="white.gif" width=49 height=49 align="center" valign="center"><b id="white_score">0</b></td>
+    <td align="center" valign="center"><font size=4 color="#FFFFFF" id="message"> &nbsp; </font></td>
+    <td background="black.gif" width=49 height=49 align="center" valign="center"><font color="#FFFFFF"><b id="black_score">0</b></font></td>
+  </tr></table>
+</table>
+<br>
+<table border=1 bgcolor="#339900">
+  <tr>
+    <td id="cell11" width=52 height=52 align="center"><img onclick="move(1,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell12" width=52 height=52 align="center"><img onclick="move(1,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell13" width=52 height=52 align="center"><img onclick="move(1,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell14" width=52 height=52 align="center"><img onclick="move(1,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell15" width=52 height=52 align="center"><img onclick="move(1,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell16" width=52 height=52 align="center"><img onclick="move(1,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell17" width=52 height=52 align="center"><img onclick="move(1,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell18" width=52 height=52 align="center"><img onclick="move(1,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell21" width=52 height=52 align="center"><img onclick="move(2,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell22" width=52 height=52 align="center"><img onclick="move(2,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell23" width=52 height=52 align="center"><img onclick="move(2,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell24" width=52 height=52 align="center"><img onclick="move(2,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell25" width=52 height=52 align="center"><img onclick="move(2,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell26" width=52 height=52 align="center"><img onclick="move(2,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell27" width=52 height=52 align="center"><img onclick="move(2,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell28" width=52 height=52 align="center"><img onclick="move(2,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell31" width=52 height=52 align="center"><img onclick="move(3,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell32" width=52 height=52 align="center"><img onclick="move(3,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell33" width=52 height=52 align="center"><img onclick="move(3,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell34" width=52 height=52 align="center"><img onclick="move(3,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell35" width=52 height=52 align="center"><img onclick="move(3,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell36" width=52 height=52 align="center"><img onclick="move(3,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell37" width=52 height=52 align="center"><img onclick="move(3,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell38" width=52 height=52 align="center"><img onclick="move(3,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell41" width=52 height=52 align="center"><img onclick="move(4,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell42" width=52 height=52 align="center"><img onclick="move(4,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell43" width=52 height=52 align="center"><img onclick="move(4,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell44" width=52 height=52 align="center"><img onclick="move(4,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell45" width=52 height=52 align="center"><img onclick="move(4,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell46" width=52 height=52 align="center"><img onclick="move(4,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell47" width=52 height=52 align="center"><img onclick="move(4,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell48" width=52 height=52 align="center"><img onclick="move(4,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell51" width=52 height=52 align="center"><img onclick="move(5,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell52" width=52 height=52 align="center"><img onclick="move(5,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell53" width=52 height=52 align="center"><img onclick="move(5,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell54" width=52 height=52 align="center"><img onclick="move(5,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell55" width=52 height=52 align="center"><img onclick="move(5,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell56" width=52 height=52 align="center"><img onclick="move(5,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell57" width=52 height=52 align="center"><img onclick="move(5,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell58" width=52 height=52 align="center"><img onclick="move(5,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell61" width=52 height=52 align="center"><img onclick="move(6,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell62" width=52 height=52 align="center"><img onclick="move(6,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell63" width=52 height=52 align="center"><img onclick="move(6,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell64" width=52 height=52 align="center"><img onclick="move(6,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell65" width=52 height=52 align="center"><img onclick="move(6,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell66" width=52 height=52 align="center"><img onclick="move(6,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell67" width=52 height=52 align="center"><img onclick="move(6,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell68" width=52 height=52 align="center"><img onclick="move(6,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell71" width=52 height=52 align="center"><img onclick="move(7,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell72" width=52 height=52 align="center"><img onclick="move(7,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell73" width=52 height=52 align="center"><img onclick="move(7,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell74" width=52 height=52 align="center"><img onclick="move(7,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell75" width=52 height=52 align="center"><img onclick="move(7,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell76" width=52 height=52 align="center"><img onclick="move(7,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell77" width=52 height=52 align="center"><img onclick="move(7,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell78" width=52 height=52 align="center"><img onclick="move(7,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+  <tr>
+    <td id="cell81" width=52 height=52 align="center"><img onclick="move(8,1)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell82" width=52 height=52 align="center"><img onclick="move(8,2)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell83" width=52 height=52 align="center"><img onclick="move(8,3)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell84" width=52 height=52 align="center"><img onclick="move(8,4)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell85" width=52 height=52 align="center"><img onclick="move(8,5)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell86" width=52 height=52 align="center"><img onclick="move(8,6)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell87" width=52 height=52 align="center"><img onclick="move(8,7)" src="clear.gif" width="50" height="50"></td>
+    <td id="cell88" width=52 height=52 align="center"><img onclick="move(8,8)" src="clear.gif" width="50" height="50"></td>
+  </tr>
+</table>
+<form name="options">
+  <input type="checkbox" name="computer_white" onclick="if(turn == 'white') computer();" /> Computer is white<br>
+  <input type="checkbox" name="computer_black" id = "BlackBox" onclick="if(turn == 'black' && document.options.computer_white.checked) computer();" /> Computer is black
+</form>
+
+<script type="text/javascript">
+	function SetBlack() {
+		if (document.options.computer_white.checked) {
+			document.getElementById("startbtn").disabled = true;
+		} else {
+			document.getElementById("BlackBox").checked = true;
+			computer();
+			document.getElementById("startbtn").disabled = true;
+		}
+
+    if (document.options.computer_white.checked && document.options.computer_black.checked) {
+      computer();
+    }
+	}
+</script>
+
+<button value="Refresh Page" onClick="window.location.reload();">Reset Game </button>
+<button value="Start Game" id="startbtn" onClick="SetBlack()">Start Game </button>
+
+</center>
+    <br/>
+</body>
+</html>
