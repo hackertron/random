@@ -1,4 +1,4 @@
 random
 ======
 
-Some quick hacks and scripts i have written for my own purposes .
+Some quick links, hacks and scripts i have written for my own purposes .
