@@ -1,122 +1,71 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QSlider, QLabel, QSizePolicy, QSpacerItem, QVBoxLayout
-from PyQt5.QtCore import Qt
-from numpy import arange, sin, cos, pi
-import pyqtgraph as pg
-import numpy as np
 import sys
+from PyQt5 import QtGui, QtCore
+import numpy as np
+import pyqtgraph as pg
 
-class Slider(QWidget):
-    def __init__(self, minimum, maximum, parent=None):
-        super(Slider, self).__init__(parent=parent)
-        self.verticalLayout = QHBoxLayout(self)
-        self.label = QLabel(self)
-        self.verticalLayout.addWidget(self.label)
-        self.horizontalLayout = QHBoxLayout()
-        spacerItem = QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem)
-        self.slider = QSlider(self)
-        # changed here for horizontal
-        self.slider.setOrientation(Qt.Horizontal)
-        self.horizontalLayout.addWidget(self.slider)
-        spacerItem1 = QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem1)
-        self.verticalLayout.addLayout(self.horizontalLayout)
-        self.resize(self.sizeHint())
 
-        self.minimum = minimum
-        self.maximum = maximum
-        self.slider.valueChanged.connect(self.setLabelValue)
-        self.x = None
-        self.setLabelValue(self.slider.value())
-
-    def setLabelValue(self, value):
-        self.x = self.minimum + (float(value) / (self.slider.maximum() - self.slider.minimum())) * (
-        self.maximum - self.minimum)
-        self.label.setText("{0:.4g}".format(self.x))
-
-class Plot2D():
+class sinus_wave(QtGui.QWidget):
     def __init__(self):
-        self.traces = dict()
+        super(sinus_wave, self).__init__()
+        self.init_ui()
+        self.qt_connections()
+        self.plotcurve = pg.PlotCurveItem()
+        self.plotwidget.addItem(self.plotcurve)
+        self.plotcurve2 = pg.PlotCurveItem()
+        self.plotwidget.addItem(self.plotcurve2)
+        self.amplitude = 10
+        self.t = 0
+        self.updateplot()
 
-        #QtGui.QApplication.setGraphicsSystem('raster')
-        #self.app = QtGui.QApplication([])
-        #mw = QtGui.QMainWindow()
-        #mw.resize(800,800)
+        self.timer = pg.QtCore.QTimer()
+        self.timer.timeout.connect(self.moveplot)
+        self.timer.start(100)
 
-        self.win = pg.GraphicsWindow(title="Sine waves plotting")
-        self.win.resize(1000,600)
-        self.win.setWindowTitle('Sine waves')
+    def init_ui(self):
+        self.setWindowTitle('Sinuswave')
+        hbox = QtGui.QVBoxLayout()
+        self.setLayout(hbox)
 
-        # Enable antialiasing for prettier plots
-        pg.setConfigOptions(antialias=True)
+        self.plotwidget = pg.PlotWidget()
+        hbox.addWidget(self.plotwidget)
 
-        self.canvas = self.win.addPlot(title="Task")
+        self.increasebutton = QtGui.QPushButton("Increase Amplitude")
+        self.decreasebutton = QtGui.QPushButton("Decrease Amplitude")
 
-    def start(self):
-        if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-            QtGui.QApplication.instance().exec_()
+        hbox.addWidget(self.increasebutton)
+        hbox.addWidget(self.decreasebutton)
 
-    def trace(self,name,dataset_x,dataset_y):
-        if name in self.traces:
-            self.traces[name].setData(dataset_x,dataset_y)
-        else:
-            self.traces[name] = self.canvas.plot(pen='y')
+        self.setGeometry(10, 10, 1000, 600)
+        self.show()
 
-class Widget(QWidget):
-    def __init__(self, parent=None):
-        super(Widget, self).__init__(parent=parent)
-        self.horizontalLayout = QHBoxLayout(self)
-        self.w1 = Slider(-10, 10)
-        self.horizontalLayout.addWidget(self.w1)
+    def qt_connections(self):
+        self.increasebutton.clicked.connect(self.on_increasebutton_clicked)
+        self.decreasebutton.clicked.connect(self.on_decreasebutton_clicked)
 
-        self.w2 = Slider(-1, 1)
-        self.horizontalLayout.addWidget(self.w2)
+    def moveplot(self):
+        self.t+=1
+        self.updateplot()
 
-        self.w3 = Slider(-10, 10)
-        self.horizontalLayout.addWidget(self.w3)
+    def updateplot(self):
+        print("Update")
+        data1 = self.amplitude*np.sin(np.linspace(0,30,121)+self.t)
+        self.plotcurve.setData(data1)
 
-        self.w4 = Slider(-10, 10)
-        self.horizontalLayout.addWidget(self.w4)
+    def on_increasebutton_clicked(self):
+        print ("Amplitude increased")
+        self.amplitude += 1
+        self.updateplot()
 
-        # self.win = pg.GraphicsWindow(title="Basic plotting examples")
-        # self.horizontalLayout.addWidget(self.win)
-        # self.p6 = self.win.addPlot(title="My Plot")
-        # self.curve = self.p6.plot(pen='r')
-        # self.update_plot()
-        self.win = pg.GraphicsWindow(title="Basic plotting examples")
-        self.win.resize(1000,600)
-        self.win.setWindowTitle('pyqtgraph example: Plotting')
+    def on_decreasebutton_clicked(self):
+        print ("Amplitude decreased")
+        self.amplitude -= 1
+        self.updateplot()
 
-        # Enable antialiasing for prettier plots
-        pg.setConfigOptions(antialias=True)
-
-        self.canvas = self.win.addPlot(title="Pytelemetry")
-        self.horizontalLayout.addWidget(self.win)
-
-        self.w1.slider.valueChanged.connect(self.update_plot)
-        self.w2.slider.valueChanged.connect(self.update_plot)
-        self.w3.slider.valueChanged.connect(self.update_plot)
-        self.w4.slider.valueChanged.connect(self.update_plot)
-
-    def update_plot(self):
-        a = self.w1.x
-        b = self.w2.x
-        c = self.w3.x
-        d = self.w4.x
-        x = np.linspace(0, 10, 100)
-        data = a + np.sin(x + c * np.pi / 180) * np.exp(-b * x) * d
-        #self.curve.setData(data)
-        print(data)
-
-    def trace(self,name,dataset_x,dataset_y):
-        if name in self.traces:
-            self.traces[name].setData(dataset_x,dataset_y)
-        else:
-            self.traces[name] = self.canvas.plot(pen='y')
-
+def main():
+    app = QtGui.QApplication(sys.argv)
+    app.setApplicationName('Sinuswave')
+    ex = sinus_wave()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    w = Widget()
-    w.show()
-    sys.exit(app.exec_())
+    main()
