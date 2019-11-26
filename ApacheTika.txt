@@ -1,0 +1,4 @@
+follow any online article to fulfill prerequisite. JDK, JRE src maven etc
+
+build by this : "sudo env "PATH=$PATH" mvn  ossindex:audit -Dossindex.fail=false -Dmaven.test.skip=true  install"
+
